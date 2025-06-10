@@ -27,7 +27,7 @@ public class CameraController : MonoBehaviour
     {
         var delta = lookAction.ReadValue<Vector2>();
 
-        var horizontalAxis = Vector3.Cross(Camera.transform.up, Camera.transform.position - Player.transform.position);
+
 
         // Translate to origin
         // Rotate 
@@ -46,33 +46,18 @@ public class CameraController : MonoBehaviour
         }
         else
         {
-            var rotation = Camera.transform.rotation * Quaternion.AngleAxis(delta.x * Sensitivity.x, Player.transform.up) * Quaternion.AngleAxis(delta.y * Sensitivity.y, horizontalAxis);
+            Vector3 offset = Camera.transform.position - Player.transform.position;
 
-            Camera.transform.SetPositionAndRotation(Vector3.zero, rotation);
-            Camera.transform.position = Camera.transform.forward * -Offset;
+            offset = Quaternion.AngleAxis(delta.x * Sensitivity.x, Player.transform.up) * offset;
 
-            // Camera.transform.RotateAround(Player.transform.position, Player.transform.up, delta.x * Sensitivity.x);
-            // Camera.transform.RotateAround(Player.transform.position, horizontalAxis, delta.y * Sensitivity.y);
+            var horizontalAxis = Vector3.Cross(Player.transform.up, offset);
 
-            // Camera.transform.LookAt(Player.transform.position);
+            offset = Quaternion.AngleAxis(delta.y * Sensitivity.y, horizontalAxis) * offset;
+
+            Camera.transform.position = Player.transform.position + offset;
+            Camera.transform.LookAt(Player.transform.position);
 
             timeWithoutInput = 0;
         }
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (!Application.isPlaying)
-        {
-            return;
-        }
-
-        Gizmos.color = Color.blue;
-        Gizmos.DrawLine(Vector3.up * -100, Vector3.up * 100);
-
-        var horizontalAxis = Vector3.Cross(Camera.transform.up, Camera.transform.position - Player.transform.position);
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(horizontalAxis * -100, horizontalAxis * 100);
     }
 }
