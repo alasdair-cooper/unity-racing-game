@@ -68,6 +68,7 @@
     },
     "dotnet.defaultSolution": "unity-racing-game.sln",
     "cSpell.words": [
-        "Mathf"
+        "Mathf",
+        "Slerp"
     ]
 }

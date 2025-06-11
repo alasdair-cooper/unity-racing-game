@@ -270,7 +270,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1583da7fb8359d549a7598b3ccc4a721, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Offset: 5
+  Offset: {x: 0, y: 2, z: -5}
   Sensitivity: {x: 0.3, y: 0.3}
   ReOrientateSpeed: 0.5
   SecondsUntilReOrientation: 2
