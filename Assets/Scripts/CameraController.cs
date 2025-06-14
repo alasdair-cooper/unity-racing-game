@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -22,7 +23,11 @@ public class CameraController : MonoBehaviour
     private float timeWithoutInput;
     private Coroutine returnToOffsetCoroutine;
 
+    private List<Vector3> gizmoLines = new();
+
     private Vector3 InitialOffset() => Offset;
+
+    private Vector3 VerticalAxis => Player.transform.up;
 
     /// <summary>
     /// Get the horizontal axis as it pertains to the camera orientation.
@@ -59,11 +64,11 @@ public class CameraController : MonoBehaviour
 
         var offset = Camera.transform.position - Player.transform.position;
 
-        var rotation = Quaternion.AngleAxis(delta.x * Sensitivity.x, Vector3.up) * Quaternion.AngleAxis(delta.y * Sensitivity.y * (InvertPitch ? -1 : 1), HorizontalAxis);
+        var rotation = Quaternion.AngleAxis(delta.x * Sensitivity.x, VerticalAxis) * Quaternion.AngleAxis(delta.y * Sensitivity.y * (InvertPitch ? -1 : 1), HorizontalAxis);
 
         offset = rotation * offset;
 
-        var verticalAngle = Vector3.SignedAngle(Vector3.ProjectOnPlane(offset, Player.transform.up), offset, HorizontalAxis);
+        var verticalAngle = Vector3.SignedAngle(Vector3.ProjectOnPlane(offset, VerticalAxis), offset, HorizontalAxis);
 
         if (verticalAngle > MaxPitch)
         {
@@ -74,8 +79,19 @@ public class CameraController : MonoBehaviour
             offset = ClampToPitch(MinPitch);
         }
 
+        var horizontalAngle = Vector3.SignedAngle(Vector3.ProjectOnPlane(offset, Player.transform.up), -Player.transform.forward, VerticalAxis);
+
+        if (horizontalAngle > MaxYaw)
+        {
+            offset = ClampToYaw(MaxYaw);
+        }
+        else if (horizontalAngle < MinYaw)
+        {
+            offset = ClampToYaw(MinYaw);
+        }
+
         MoveCamera(offset);
-        
+
         timeWithoutInput = 0;
 
         return;
@@ -83,9 +99,16 @@ public class CameraController : MonoBehaviour
         Vector3 ClampToPitch(int pitch)
         {
             var clampedRotation = Quaternion.AngleAxis(pitch, HorizontalAxis);
-            var horizontalOffset = Vector3.ProjectOnPlane(offset, Player.transform.up);
-            // Normalize & multiply by the magnitude as not preserved by projection
-            return clampedRotation * horizontalOffset.normalized * offset.magnitude;
+            var correctOffsetDirection = Vector3.ProjectOnPlane(offset, VerticalAxis);
+            // Normalize & multiply by the original magnitude as not preserved by projection
+            return clampedRotation * correctOffsetDirection.normalized * offset.magnitude;
+        }
+
+        Vector3 ClampToYaw(int yaw)
+        {
+            var clampedRotation = Quaternion.AngleAxis(180 - yaw, VerticalAxis);
+            var correctOffsetDirection = Vector3.ProjectOnPlane(offset, Player.transform.right);
+            return clampedRotation * correctOffsetDirection.normalized * offset.magnitude;
         }
     }
 
@@ -141,8 +164,17 @@ public class CameraController : MonoBehaviour
     {
         if (Application.isPlaying)
         {
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(Player.transform.position, Player.transform.forward);
+
             Gizmos.color = Color.red;
             Gizmos.DrawLine(Player.transform.position, HorizontalAxis * 50);
+
+            Gizmos.color = Color.blue;
+            foreach (var line in gizmoLines)
+            {
+                Gizmos.DrawLine(Player.transform.position, line);
+            }
         }
     }
 }

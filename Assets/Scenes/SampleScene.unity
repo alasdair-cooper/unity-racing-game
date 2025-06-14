@@ -270,15 +270,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1583da7fb8359d549a7598b3ccc4a721, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Offset: {x: -5, y: 2, z: 0}
+  Offset: {x: 0, y: 2, z: -5}
   Sensitivity: {x: 0.3, y: 0.3}
   ReOrientateSpeed: 45
   SecondsUntilReOrientation: 2
   MinPitch: -10
   MaxPitch: 80
-  InvertPitch: 0
-  MaxYaw: 179
-  MinYaw: -179
+  InvertPitch: 1
+  MaxYaw: 120
+  MinYaw: -120
   Player: {fileID: 1498346954}
 --- !u!114 &330585549
 MonoBehaviour:
