@@ -1,4 +1,5 @@
 using System.Collections;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,8 +9,11 @@ public class CameraController : MonoBehaviour
     public Vector2 Sensitivity;
     public float ReOrientateSpeed;
     public float SecondsUntilReOrientation;
-    public int MinVerticalPitch;
-    public int MaxVerticalPitch;
+    public int MinPitch;
+    public int MaxPitch;
+    public bool InvertPitch;
+    public int MaxYaw;
+    public int MinYaw;
 
     private InputAction lookAction;
     private Camera Camera;
@@ -18,8 +22,15 @@ public class CameraController : MonoBehaviour
     private float timeWithoutInput;
     private Coroutine returnToOffsetCoroutine;
 
-
     private Vector3 InitialOffset() => Offset;
+
+    /// <summary>
+    /// Get the horizontal axis as it pertains to the camera orientation.
+    /// </summary>
+    /// <remarks>
+    /// This will always point in the direction of the positive x axis (right) relative to the camera.
+    /// </remarks>
+    private Vector3 HorizontalAxis => Vector3.Cross((Camera.transform.position - Player.transform.position).normalized, Vector3.up);
 
     private void Start()
     {
@@ -48,23 +59,54 @@ public class CameraController : MonoBehaviour
 
         var offset = Camera.transform.position - Player.transform.position;
 
-        var horizontalAxis = Vector3.Cross(Vector3.up, offset.normalized);
+        var rotation = Quaternion.AngleAxis(delta.x * Sensitivity.x, Vector3.up) * Quaternion.AngleAxis(delta.y * Sensitivity.y * (InvertPitch ? -1 : 1), HorizontalAxis);
 
-        var rotation = Quaternion.AngleAxis(delta.x * Sensitivity.x, Vector3.up) * Quaternion.AngleAxis(delta.y * Sensitivity.y, horizontalAxis);
+        offset = rotation * offset;
 
-        Camera.transform.position = Player.transform.position + rotation * offset;
-        Camera.transform.LookAt(Player.transform);
+        var verticalAngle = Vector3.SignedAngle(Vector3.ProjectOnPlane(offset, Player.transform.up), offset, HorizontalAxis);
 
+        if (verticalAngle > MaxPitch)
+        {
+            offset = ClampToPitch(MaxPitch);
+        }
+        else if (verticalAngle < MinPitch)
+        {
+            offset = ClampToPitch(MinPitch);
+        }
+
+        MoveCamera(offset);
+        
         timeWithoutInput = 0;
 
         return;
+
+        Vector3 ClampToPitch(int pitch)
+        {
+            var clampedRotation = Quaternion.AngleAxis(pitch, HorizontalAxis);
+            var horizontalOffset = Vector3.ProjectOnPlane(offset, Player.transform.up);
+            // Normalize & multiply by the magnitude as not preserved by projection
+            return clampedRotation * horizontalOffset.normalized * offset.magnitude;
+        }
     }
 
-    private void ReturnToOffset()
+    /// <summary>
+    /// Move the camera to a new offset and look at the player.
+    /// </summary>
+    /// <param name="position">The offset to move to.</param>
+    private void MoveCamera(Vector3 position)
     {
-        returnToOffsetCoroutine = StartCoroutine(ReturnToOffsetCoroutine());
+        Camera.transform.position = Player.transform.position + position;
+        Camera.transform.LookAt(Player.transform);
     }
 
+    /// <summary>
+    /// Begin the repositioning back to the original offset.
+    /// </summary>
+    private void ReturnToOffset() => returnToOffsetCoroutine = StartCoroutine(ReturnToOffsetCoroutine());
+
+    /// <summary>
+    /// Abort the repositioning back to offset.
+    /// </summary>
     private void CancelReturnToOffset()
     {
         if (returnToOffsetCoroutine is not null)
@@ -85,15 +127,22 @@ public class CameraController : MonoBehaviour
         {
             var currentOffset = Vector3.Slerp(startOffset, targetOffset, Mathf.SmoothStep(0f, 1f, t));
 
-            Camera.transform.position = Player.transform.position + currentOffset;
-            Camera.transform.LookAt(Player.transform.position);
+            MoveCamera(currentOffset);
 
             yield return null;
         }
 
-        Camera.transform.position = Player.transform.position + targetOffset;
-        Camera.transform.LookAt(Player.transform.position);
+        MoveCamera(targetOffset);
 
         returnToOffsetCoroutine = null;
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (Application.isPlaying)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(Player.transform.position, HorizontalAxis * 50);
+        }
     }
 }
