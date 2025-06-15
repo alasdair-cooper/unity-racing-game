@@ -62,53 +62,53 @@ public class CameraController : MonoBehaviour
 
         CancelReturnToOffset();
 
-        var offset = Camera.transform.position - Player.transform.position;
-
         var rotation = Quaternion.AngleAxis(delta.x * Sensitivity.x, VerticalAxis) * Quaternion.AngleAxis(delta.y * Sensitivity.y * (InvertPitch ? -1 : 1), HorizontalAxis);
+        var newPosition = ClampRotations(rotation * (Camera.transform.position - Player.transform.position));
 
-        offset = rotation * offset;
+        MoveCamera(newPosition);
 
-        var verticalAngle = Vector3.SignedAngle(Vector3.ProjectOnPlane(offset, VerticalAxis), offset, HorizontalAxis);
+        timeWithoutInput = 0;
+    }
+
+    private Vector3 ClampRotations(Vector3 position)
+    {
+        var verticalAngle = Vector3.SignedAngle(Vector3.ProjectOnPlane(position, VerticalAxis), position, HorizontalAxis);
 
         if (verticalAngle > MaxPitch)
         {
-            offset = ClampToPitch(MaxPitch);
+            position = ClampToPitch(MaxPitch);
         }
         else if (verticalAngle < MinPitch)
         {
-            offset = ClampToPitch(MinPitch);
+            position = ClampToPitch(MinPitch);
         }
 
-        var horizontalAngle = Vector3.SignedAngle(Vector3.ProjectOnPlane(offset, Player.transform.up), -Player.transform.forward, VerticalAxis);
+        var horizontalAngle = Vector3.SignedAngle(Vector3.ProjectOnPlane(position, VerticalAxis), -Player.transform.forward, VerticalAxis);
 
         if (horizontalAngle > MaxYaw)
         {
-            offset = ClampToYaw(MaxYaw);
+            position = ClampToYaw(MaxYaw);
         }
         else if (horizontalAngle < MinYaw)
         {
-            offset = ClampToYaw(MinYaw);
+            position = ClampToYaw(MinYaw);
         }
 
-        MoveCamera(offset);
-
-        timeWithoutInput = 0;
-
-        return;
+        return position;
 
         Vector3 ClampToPitch(int pitch)
         {
             var clampedRotation = Quaternion.AngleAxis(pitch, HorizontalAxis);
-            var correctOffsetDirection = Vector3.ProjectOnPlane(offset, VerticalAxis);
+            var correctOffsetDirection = Vector3.ProjectOnPlane(position, VerticalAxis);
             // Normalize & multiply by the original magnitude as not preserved by projection
-            return clampedRotation * correctOffsetDirection.normalized * offset.magnitude;
+            return clampedRotation * correctOffsetDirection.normalized * position.magnitude;
         }
 
         Vector3 ClampToYaw(int yaw)
         {
             var clampedRotation = Quaternion.AngleAxis(180 - yaw, VerticalAxis);
-            var correctOffsetDirection = Vector3.ProjectOnPlane(offset, Player.transform.right);
-            return clampedRotation * correctOffsetDirection.normalized * offset.magnitude;
+            var correctOffsetDirection = Vector3.ProjectOnPlane(position, Player.transform.right);
+            return clampedRotation * correctOffsetDirection.normalized * position.magnitude;
         }
     }
 
