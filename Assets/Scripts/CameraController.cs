@@ -6,7 +6,9 @@ using UnityEngine.InputSystem;
 
 public class CameraController : MonoBehaviour
 {
-    public Vector3 Offset;
+    public float FollowDistance;
+    public float FollowPitch;
+
     public Vector2 Sensitivity;
     public float ReOrientateSpeed;
     public float SecondsUntilReOrientation;
@@ -25,7 +27,7 @@ public class CameraController : MonoBehaviour
 
     private List<Vector3> gizmoLines = new();
 
-    private Vector3 InitialOffset() => Offset;
+    private Vector3 InitialOffset() => Quaternion.AngleAxis(FollowPitch, Player.transform.right) * ((-Player.transform.forward).normalized * FollowDistance);
 
     private Vector3 VerticalAxis => Player.transform.up;
 
@@ -165,7 +167,8 @@ public class CameraController : MonoBehaviour
         if (Application.isPlaying)
         {
             Gizmos.color = Color.green;
-            Gizmos.DrawLine(Player.transform.position, Player.transform.forward);
+            Gizmos.DrawLine(Player.transform.position, Player.transform.position + Player.transform.forward);
+            Gizmos.DrawLine(Player.transform.position, Player.transform.position + Player.transform.right);
 
             Gizmos.color = Color.red;
             Gizmos.DrawLine(Player.transform.position, HorizontalAxis * 50);

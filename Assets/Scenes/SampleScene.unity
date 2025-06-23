@@ -265,7 +265,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 5.43, y: 1.69, z: -8.22}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -378,8 +378,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b5fabf43ecfacf448a8a336e1913ec5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Acceleration: 0.2
-  Deceleration: 0.05
+  EngineAcceleration: 0.5
+  BrakeDeceleration: 0.6
+  FrictionDeceleration: 0
+  AirResistanceMultiplier: 30
+  TurningSpeed: 0.5
 --- !u!4 &341902515
 Transform:
   m_ObjectHideFlags: 0
