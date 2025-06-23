@@ -119,6 +119,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!4 &235100155 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -764697234159880554, guid: 26f3a1b0a85a47b4cb99156aa031db78, type: 3}
+  m_PrefabInstance: {fileID: 270473894}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &270473894
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -174,7 +179,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 26f3a1b0a85a47b4cb99156aa031db78, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2027117562}
   m_SourcePrefab: {fileID: 100100000, guid: 26f3a1b0a85a47b4cb99156aa031db78, type: 3}
 --- !u!1 &330585543
 GameObject:
@@ -327,7 +335,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1583da7fb8359d549a7598b3ccc4a721, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Offset: {x: 0, y: 2, z: -5}
+  FollowDistance: 5
+  FollowPitch: 30
   Sensitivity: {x: 0.3, y: 0.3}
   ReOrientateSpeed: 45
   SecondsUntilReOrientation: 2
@@ -382,7 +391,8 @@ MonoBehaviour:
   BrakeDeceleration: 0.6
   FrictionDeceleration: 0
   AirResistanceMultiplier: 30
-  TurningSpeed: 0.5
+  TurningSpeed: 45
+  FullLockAngle: 30
 --- !u!4 &341902515
 Transform:
   m_ObjectHideFlags: 0
@@ -679,11 +689,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1740578540 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -7529372644190115253, guid: 26f3a1b0a85a47b4cb99156aa031db78, type: 3}
+  m_PrefabInstance: {fileID: 270473894}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1937583110 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 26f3a1b0a85a47b4cb99156aa031db78, type: 3}
   m_PrefabInstance: {fileID: 270473894}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2027117561 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 26f3a1b0a85a47b4cb99156aa031db78, type: 3}
+  m_PrefabInstance: {fileID: 270473894}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2027117562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2027117561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7457d3b22265fe1499d9f4608af3f8f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  FrontLeftWheel: {fileID: 1740578540}
+  FrontRightWheel: {fileID: 235100155}
+  Player: {fileID: 341902514}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
