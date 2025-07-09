@@ -6,26 +6,31 @@ using UnityEngine.InputSystem;
 
 public class CameraController : MonoBehaviour
 {
+    [Header("Settings")]
     public float FollowDistance;
     public float FollowPitch;
-
-    public Vector2 Sensitivity;
     public float ReOrientateSpeed;
     public float SecondsUntilReOrientation;
     public int MinPitch;
     public int MaxPitch;
-    public bool InvertPitch;
     public int MaxYaw;
     public int MinYaw;
 
+    [Header("Controls")]
+    public Vector2 Sensitivity;
+    public bool InvertPitch;
+
+    [Header("Attachments")]
+    public Component Player;
+
     private InputAction lookAction;
     private Camera Camera;
-    public Component Player;
 
     private float timeWithoutInput;
     private Coroutine returnToOffsetCoroutine;
 
     private List<Vector3> gizmoLines = new();
+    private List<(Vector3 origin, float radius)> gizmoCircles = new();
 
     private Vector3 InitialOffset() => Quaternion.AngleAxis(FollowPitch, Player.transform.right) * ((-Player.transform.forward).normalized * FollowDistance);
 
@@ -177,6 +182,11 @@ public class CameraController : MonoBehaviour
             foreach (var line in gizmoLines)
             {
                 Gizmos.DrawLine(Player.transform.position, line);
+            }
+
+            foreach (var (origin, radius) in gizmoCircles)
+            {
+                Gizmos.DrawWireSphere(origin, radius);
             }
         }
     }
