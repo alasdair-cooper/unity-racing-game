@@ -4,13 +4,19 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Stats")]
     public float EngineAcceleration;
     public float BrakeDeceleration;
     public float FrictionDeceleration;
     public float AirResistanceMultiplier;
-
     public float TurningSpeed;
     public float FullLockAngle;
+
+    [Header("Attachments")]
+    public Component FrontLeftWheel;
+    public Component FrontRightWheel;
+    public Component RearLeftWheel;
+    public Component RearRightWheel;
 
     private InputAction accelerateAction;
     private InputAction brakeAction;
@@ -54,5 +60,21 @@ public class PlayerController : MonoBehaviour
         // playerTransform.Rotate(0, SteeringAngleDegrees * Time.deltaTime * TurningSpeed, 0);
 
         transform.position += currentSpeed * Time.deltaTime * transform.forward;
+
+        FrontLeftWheel.transform.rotation = Quaternion.AngleAxis(SteeringAngle, FrontLeftWheel.transform.up);
+        FrontRightWheel.transform.rotation = Quaternion.AngleAxis(SteeringAngle, FrontRightWheel.transform.up);
+    }
+
+    float CalculateCenterOfTurn()
+    {
+        var centerOfFrontAxle = Vector3.Lerp(FrontLeftWheel.transform.position, FrontRightWheel.transform.position, 0.5f);
+        var centerOfRearAxle = Vector3.Lerp(RearLeftWheel.transform.position, RearRightWheel.transform.position, 0.5f);
+        var wheelbase = (centerOfFrontAxle - centerOfRearAxle).magnitude;
+
+        var turningRadiusDirection = Quaternion.AngleAxis(SteeringAngle, FrontLeftWheel.transform.up) * centerOfFrontAxle;
+
+        var turningRadius = wheelbase / Mathf.Sin(SteeringAngle);
+
+        return turningRadius;
     }
 }
