@@ -22,14 +22,13 @@ public class CameraController : MonoBehaviour
 
     [Header("Attachments")]
     public Component Player;
+    public GizmosController Gizmos;
 
     private InputAction lookAction;
     private Camera Camera;
 
     private float timeWithoutInput;
     private Coroutine returnToOffsetCoroutine;
-
-    private List<Vector3> gizmoLines = new();
 
     private Vector3 InitialOffset() => Quaternion.AngleAxis(FollowPitch, Player.transform.right) * ((-Player.transform.forward).normalized * FollowDistance);
 
@@ -48,6 +47,9 @@ public class CameraController : MonoBehaviour
         lookAction = InputSystem.actions.FindAction("look");
         Camera = GetComponent<Camera>();
         Camera.transform.position = InitialOffset();
+
+        Gizmos.RegisterGizmo(() => new LineGizmoInfo(Color.green, Player.transform.position, Player.transform.position + Player.transform.forward));
+        Gizmos.RegisterGizmo(() => new LineGizmoInfo(Color.green, Player.transform.position, Player.transform.position + Player.transform.right));
     }
 
     private void Update()
@@ -164,24 +166,5 @@ public class CameraController : MonoBehaviour
         MoveCamera(targetOffset);
 
         returnToOffsetCoroutine = null;
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (Application.isPlaying)
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(Player.transform.position, Player.transform.position + Player.transform.forward);
-            Gizmos.DrawLine(Player.transform.position, Player.transform.position + Player.transform.right);
-
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(Player.transform.position, HorizontalAxis * 50);
-
-            Gizmos.color = Color.blue;
-            foreach (var line in gizmoLines)
-            {
-                Gizmos.DrawLine(Player.transform.position, line);
-            }
-        }
     }
 }

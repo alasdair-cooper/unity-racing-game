@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GizmosController : MonoBehaviour
@@ -15,9 +16,9 @@ public class GizmosController : MonoBehaviour
     {
         if (Application.isPlaying)
         {
-            foreach (var generator in _gizmoGenerators)
+            foreach (var gizmo in _gizmoGenerators.Select(x => x()).Where(x => x.ShouldDraw))
             {
-                generator().Draw();
+                gizmo.Draw();
             }
         }
     }
@@ -25,16 +26,22 @@ public class GizmosController : MonoBehaviour
 
 public abstract class GizmoInfo
 {
-    public GizmoInfo(Color color) => Color = color;
+    public GizmoInfo(Color color, bool shouldDraw)
+    {
+        Color = color;
+        ShouldDraw = shouldDraw;
+    }
 
     public Color Color { get; }
+
+    public bool ShouldDraw { get; }
 
     public abstract void Draw();
 }
 
 public class LineGizmoInfo : GizmoInfo
 {
-    public LineGizmoInfo(Color color, Vector3 start, Vector3 end) : base(color)
+    public LineGizmoInfo(Color color, Vector3 start, Vector3 end, bool shouldDraw = true) : base(color, shouldDraw)
     {
         Start = start;
         End = end;
@@ -55,7 +62,7 @@ public class LineGizmoInfo : GizmoInfo
 
 public class CircleGizmoInfo : GizmoInfo
 {
-    public CircleGizmoInfo(Color color, Vector3 origin, float radius) : base(color)
+    public CircleGizmoInfo(Color color, Vector3 origin, float radius, bool shouldDraw = true) : base(color, shouldDraw)
     {
         Origin = origin;
         Radius = radius;
