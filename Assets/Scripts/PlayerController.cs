@@ -118,8 +118,6 @@ public class PlayerController : MonoBehaviour
 
         FrontLeftWheel.transform.localRotation = Quaternion.AngleAxis(currentLockAngle, FrontLeftWheel.transform.up);
         FrontRightWheel.transform.localRotation = Quaternion.AngleAxis(currentLockAngle, FrontRightWheel.transform.up);
-
-        Debug.Log(currentLockAngle);
     }
 
     float CalculateFrontWheelTurningRadius(float angle) => Wheelbase / Mathf.Sin(Mathf.Deg2Rad * angle);
