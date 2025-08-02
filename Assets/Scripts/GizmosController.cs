@@ -5,12 +5,13 @@ using UnityEngine;
 
 public class GizmosController : MonoBehaviour
 {
+    public static GizmosController Instance { get; private set; }
+
     private readonly List<Func<GizmoInfo>> _gizmoGenerators = new();
 
-    public void RegisterGizmo(Func<GizmoInfo> gizmoGenerator)
-    {
-        _gizmoGenerators.Add(gizmoGenerator);
-    }
+    void Start() => Instance = this;
+
+    public void RegisterGizmo(Func<GizmoInfo> gizmoGenerator) => _gizmoGenerators.Add(gizmoGenerator);
 
     void OnDrawGizmos()
     {

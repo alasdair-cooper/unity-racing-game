@@ -1,5 +1,3 @@
-using System;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,12 +11,11 @@ public class PlayerController : MonoBehaviour
     public float TurningSpeed;
     public float FullLockAngle;
 
-    [Header("Attachments")]
+    [Header("Wheels")]
     public Component FrontLeftWheel;
     public Component FrontRightWheel;
     public Component RearLeftWheel;
     public Component RearRightWheel;
-    public GizmosController Gizmos;
 
     private InputAction accelerateAction;
     private InputAction brakeAction;
@@ -37,28 +34,28 @@ public class PlayerController : MonoBehaviour
         brakeAction = InputSystem.actions.FindAction("brake");
         moveAction = InputSystem.actions.FindAction("move");
 
-        Gizmos.RegisterGizmo(() =>
+        GizmosController.Instance.RegisterGizmo(() =>
         {
             var r = CalculateBackWheelTurningRadius(-currentLockAngle);
 
             return new LineGizmoInfo(Color.cyan, RearLeftWheel.transform.position, RearLeftWheel.transform.position - RearLeftWheel.transform.right * r, currentLockAngle < 0);
         });
 
-        Gizmos.RegisterGizmo(() =>
+        GizmosController.Instance.RegisterGizmo(() =>
         {
             var r = CalculateFrontWheelTurningRadius(-currentLockAngle);
 
             return new LineGizmoInfo(Color.cyan, FrontLeftWheel.transform.position, FrontLeftWheel.transform.position - FrontLeftWheel.transform.right * r, currentLockAngle < 0);
         });
 
-        Gizmos.RegisterGizmo(() =>
+        GizmosController.Instance.RegisterGizmo(() =>
        {
            var r = CalculateBackWheelTurningRadius(currentLockAngle);
 
            return new LineGizmoInfo(Color.cyan, RearRightWheel.transform.position, RearRightWheel.transform.position + RearRightWheel.transform.right * r, currentLockAngle > 0);
        });
 
-        Gizmos.RegisterGizmo(() =>
+        GizmosController.Instance.RegisterGizmo(() =>
         {
             var r = CalculateFrontWheelTurningRadius(currentLockAngle);
 

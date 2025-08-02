@@ -1,6 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -22,7 +20,6 @@ public class CameraController : MonoBehaviour
 
     [Header("Attachments")]
     public Component Player;
-    public GizmosController Gizmos;
 
     private InputAction lookAction;
     private Camera Camera;
@@ -48,8 +45,8 @@ public class CameraController : MonoBehaviour
         Camera = GetComponent<Camera>();
         Camera.transform.position = InitialOffset();
 
-        Gizmos.RegisterGizmo(() => new LineGizmoInfo(Color.green, Player.transform.position, Player.transform.position + Player.transform.forward));
-        Gizmos.RegisterGizmo(() => new LineGizmoInfo(Color.green, Player.transform.position, Player.transform.position + Player.transform.right));
+        GizmosController.Instance.RegisterGizmo(() => new LineGizmoInfo(Color.green, Player.transform.position, Player.transform.position + Player.transform.forward));
+        GizmosController.Instance.RegisterGizmo(() => new LineGizmoInfo(Color.green, Player.transform.position, Player.transform.position + Player.transform.right));
     }
 
     private void Update()
