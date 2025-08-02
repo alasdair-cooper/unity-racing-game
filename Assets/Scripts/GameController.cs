@@ -5,16 +5,21 @@ public class GameController : MonoBehaviour
 {
     private readonly HashSet<string> _triggeredCheckpointNames = new();
 
-    public CheckpointInstance _firstCheckpoint;
+    public CheckpointInstance[] Checkpoints;
 
-    private int _checkpointCount = 0;
     private int _lapCount = 0;
 
-    void Start() => _checkpointCount = GetComponentsInChildren<CheckpointInstance>().Length;
+    void Start()
+    {
+        foreach (var checkpoint in Checkpoints)
+        {
+            checkpoint.OnPassed += (_, args) => OnCheckpointPassed(args.Name);
+        }
+    }
 
     public void OnCheckpointPassed(string name)
     {
-        if (_triggeredCheckpointNames.Count == _checkpointCount && name == _firstCheckpoint.name)
+        if (_triggeredCheckpointNames.Count == Checkpoints.Length && name == Checkpoints[0].name)
         {
             _triggeredCheckpointNames.Clear();
             _lapCount++;
