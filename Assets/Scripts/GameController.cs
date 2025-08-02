@@ -1,16 +1,25 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
     private readonly HashSet<string> _triggeredCheckpointNames = new();
 
+    [Header("Game")]
+    public int MaxLaps;
     public CheckpointInstance[] Checkpoints;
+
+    [Header("UI")]
+    public string LapTextFormat;
+    public TMP_Text LapText;
 
     private int _lapCount = 0;
 
     void Start()
     {
+        UpdateLapCounter();
+
         foreach (var checkpoint in Checkpoints)
         {
             checkpoint.OnPassed += (_, args) => OnCheckpointPassed(args.Name);
@@ -21,14 +30,16 @@ public class GameController : MonoBehaviour
     {
         if (_triggeredCheckpointNames.Count == Checkpoints.Length && name == Checkpoints[0].name)
         {
-            _triggeredCheckpointNames.Clear();
             _lapCount++;
-
-            Debug.Log($"Lap {_lapCount} completed!");
+            _triggeredCheckpointNames.Clear();
+            UpdateLapCounter();
         }
 
         _triggeredCheckpointNames.Add(name);
+    }
 
-        Debug.Log($"Checkpoint {name} passed!");
+    public void UpdateLapCounter()
+    {
+        LapText.text = _lapCount != MaxLaps ? string.Format(LapTextFormat, _lapCount + 1, MaxLaps) : "Race completed!";
     }
 }
