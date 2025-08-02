@@ -33,6 +33,11 @@ public class GameController : MonoBehaviour
             _lapCount++;
             _triggeredCheckpointNames.Clear();
             UpdateLapCounter();
+
+            if (_lapCount == MaxLaps)
+            {
+                OnRaceCompleted();
+            }
         }
 
         _triggeredCheckpointNames.Add(name);
@@ -40,6 +45,12 @@ public class GameController : MonoBehaviour
 
     public void UpdateLapCounter()
     {
-        LapText.text = _lapCount != MaxLaps ? string.Format(LapTextFormat, _lapCount + 1, MaxLaps) : "Race completed!";
+        LapText.text = string.Format(LapTextFormat, _lapCount + 1, MaxLaps);
+    }
+
+    public void OnRaceCompleted()
+    {
+        LapText.text = "Race completed!";
+        UiManager.Instance.SetScreen(GameScreen.RaceCompleted);
     }
 }
