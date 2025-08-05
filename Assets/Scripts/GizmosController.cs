@@ -9,7 +9,7 @@ public class GizmosController : MonoBehaviour
 
     private readonly List<Func<GizmoInfo>> _gizmoGenerators = new();
 
-    void Start() => Instance = this;
+    void Awake() => Instance = this;
 
     public void RegisterGizmo(Func<GizmoInfo> gizmoGenerator) => _gizmoGenerators.Add(gizmoGenerator);
 

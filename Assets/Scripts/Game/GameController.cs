@@ -10,7 +10,7 @@ public class GameController : MonoBehaviour
     public int MaxLaps;
     public CheckpointInstance[] Checkpoints;
 
-    [Header("UI")]
+    [Header("HUD")]
     public string LapTextFormat;
     public TMP_Text LapText;
 
@@ -22,7 +22,7 @@ public class GameController : MonoBehaviour
 
         foreach (var checkpoint in Checkpoints)
         {
-            checkpoint.OnPassed += (_, args) => OnCheckpointPassed(args.Name);
+            EventController.Instance.CheckpointPassed += (_, args) => OnCheckpointPassed(args.Name);
         }
     }
 
@@ -30,6 +30,7 @@ public class GameController : MonoBehaviour
     {
         if (_triggeredCheckpointNames.Count == Checkpoints.Length && name == Checkpoints[0].name)
         {
+            EventController.Instance.OnLapCompleted();
             _lapCount++;
             _triggeredCheckpointNames.Clear();
             UpdateLapCounter();
