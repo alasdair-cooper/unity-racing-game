@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2345168005953666173}
   - component: {fileID: 368395118425024823}
   - component: {fileID: 3070275236005792445}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Checkpoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -52,7 +52,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1024
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0

@@ -8,6 +8,7 @@ public class GameController : MonoBehaviour
 
     [Header("Game")]
     public int MaxLaps;
+    public CheckpointInstance LapStartEndCheckpoint;
     public CheckpointInstance[] Checkpoints;
 
     [Header("HUD")]
@@ -28,7 +29,7 @@ public class GameController : MonoBehaviour
 
     public void OnCheckpointPassed(string name)
     {
-        if (_triggeredCheckpointNames.Count == Checkpoints.Length && name == Checkpoints[0].name)
+        if (_triggeredCheckpointNames.Count == Checkpoints.Length && name == LapStartEndCheckpoint.name)
         {
             EventController.Instance.OnLapCompleted();
             _lapCount++;
