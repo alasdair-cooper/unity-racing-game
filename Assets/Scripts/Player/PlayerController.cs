@@ -6,6 +6,7 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Stats")]
     public float EngineAcceleration;
+    public float FrictionDeceleration;
     public float BrakeDeceleration;
     public float MaxSpeed;
     public float TurningSpeed;
@@ -74,7 +75,9 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        var currentAcceleration = EngineAcceleration * accelerateAction.ReadValue<float>() - (BrakeDeceleration * brakeAction.ReadValue<float>());
+        var throttleInputValue = accelerateAction.ReadValue<float>();
+
+        var currentAcceleration = throttleInputValue != 0 ? EngineAcceleration * throttleInputValue - (BrakeDeceleration * brakeAction.ReadValue<float>()) : -FrictionDeceleration;
 
         currentSpeed = Mathf.Clamp(currentSpeed + currentAcceleration * Time.deltaTime, 0, MaxSpeed);
 
