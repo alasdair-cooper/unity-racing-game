@@ -22,9 +22,17 @@ public class EventController : MonoBehaviour
 
     public void OnCheckpointPassed(string checkpointName) => CheckpointPassed.Invoke(this, new CheckpointPassedEventArgs(checkpointName));
 
+    public event EventHandler<SplitRecordedEventArgs> SplitRecorded;
+
+    public void OnSplitRecorded(TimeSpan delta) => SplitRecorded.Invoke(this, new SplitRecordedEventArgs(delta));
+
     public event EventHandler<LapCompletedEventArgs> LapCompleted;
 
     public void OnLapCompleted(int completedLapCount, int maxLapCount) => LapCompleted.Invoke(this, new LapCompletedEventArgs(completedLapCount, maxLapCount));
+
+    public event EventHandler<LapRecordedEventArgs> LapRecorded;
+
+    public void OnLapRecorded(TimeSpan delta) => LapRecorded.Invoke(this, new LapRecordedEventArgs(delta));
 
     public event EventHandler<RaceStartedEventArgs> RaceStarted;
 
@@ -56,8 +64,22 @@ public class RaceStartedEventArgs
 public class RaceCountdownTickEventArgs
 {
     public RaceCountdownTickEventArgs(int tick) => Tick = tick;
-    
+
     public int Tick { get; }
+}
+
+public class SplitRecordedEventArgs
+{
+    public SplitRecordedEventArgs(TimeSpan delta) => Delta = delta;
+
+    public TimeSpan Delta { get; }
+}
+
+public class LapRecordedEventArgs
+{
+    public LapRecordedEventArgs(TimeSpan delta) => Delta = delta;
+
+    public TimeSpan Delta { get; }
 }
 
 public class LapCompletedEventArgs

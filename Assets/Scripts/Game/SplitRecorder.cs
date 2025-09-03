@@ -10,10 +10,6 @@ public class SplitRecorder : MonoBehaviour
     private string _lastCheckpointName;
     private double _timeSinceLastCheckpoint;
 
-    [Header("HUD")]
-    public string SplitDeltaFormat;
-    public TMP_Text SplitDeltaText;
-
     public void Start() => EventController.Instance.CheckpointPassed += (_, args) => OnCheckpointPassed(args.Name);
 
     public void Update() => _timeSinceLastCheckpoint += Time.deltaTime;
@@ -29,23 +25,7 @@ public class SplitRecorder : MonoBehaviour
 
             if (previousSplit != null)
             {
-                var splitDelta = previousSplit.Time - newSplit.Time;
-                switch (splitDelta.Ticks)
-                {
-                    case > 0:
-                        SplitDeltaText.text = "+" + splitDelta.ToString(SplitDeltaFormat);
-                        SplitDeltaText.color = Color.green;
-                        break;
-                    case < 0:
-                        SplitDeltaText.text = "-" + splitDelta.ToString(SplitDeltaFormat);
-                        SplitDeltaText.color = Color.red;
-                        break;
-                    case 0:
-                        SplitDeltaText.text = splitDelta.ToString(SplitDeltaFormat);
-                        SplitDeltaText.color = Color.white;
-                        break;
-
-                }
+                EventController.Instance.OnSplitRecorded(previousSplit.Time - newSplit.Time);
             }
         }
 
