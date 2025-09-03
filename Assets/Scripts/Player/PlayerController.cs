@@ -24,7 +24,7 @@ public class PlayerController : MonoBehaviour
     private float currentSpeed = 0;
     private float currentLockAngle = 0;
 
-    private bool isControlDisabled = true; 
+    private bool isControlDisabled = true;
 
     private float Wheelbase => (FrontLeftWheel.transform.position - RearLeftWheel.transform.position).magnitude;
 
@@ -76,7 +76,7 @@ public class PlayerController : MonoBehaviour
 
         var currentAcceleration = EngineAcceleration * accelerateAction.ReadValue<float>() - (BrakeDeceleration * brakeAction.ReadValue<float>());
 
-        currentSpeed = Mathf.Clamp(currentSpeed + currentAcceleration, 0, MaxSpeed);
+        currentSpeed = Mathf.Clamp(currentSpeed + currentAcceleration * Time.deltaTime, 0, MaxSpeed);
 
         var moveInputValue = moveAction.ReadValue<Vector2>().x;
 
