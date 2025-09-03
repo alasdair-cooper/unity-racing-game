@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,10 +7,8 @@ public class PlayerController : MonoBehaviour
     [Header("Stats")]
     public float EngineAcceleration;
     public float BrakeDeceleration;
-    public float FrictionDeceleration;
-    public float AirResistanceMultiplier;
+    public float MaxSpeed;
     public float TurningSpeed;
-    public AnimationCurve TurningSpeedCurve;
     public float FullLockAngle;
 
     [Header("Wheels")]
@@ -25,75 +24,65 @@ public class PlayerController : MonoBehaviour
     private float currentSpeed = 0;
     private float currentLockAngle = 0;
 
-    private float AirResistanceDeceleration => 1 / AirResistanceMultiplier * currentSpeed / EngineAcceleration;
+    private bool isControlDisabled = true; 
 
     private float Wheelbase => (FrontLeftWheel.transform.position - RearLeftWheel.transform.position).magnitude;
 
-    private float ActualLockAngle
-    {
-        get
-        {
-            if (currentLockAngle == 0)
-            {
-                return 0;
-            }
-            else if (currentLockAngle > 0)
-            {
-                return TurningSpeedCurve.Evaluate(currentLockAngle / FullLockAngle) * FullLockAngle;
-            }
-            else
-            {
-                return -TurningSpeedCurve.Evaluate(-currentLockAngle / FullLockAngle) * FullLockAngle;
-            }
-        }
-    }
+    public float CurrentSpeed => currentSpeed;
 
     void Start()
     {
+        EventController.Instance.RaceStarted += (_, _) => isControlDisabled = false;
+
         accelerateAction = InputSystem.actions.FindAction("accelerate");
         brakeAction = InputSystem.actions.FindAction("brake");
         moveAction = InputSystem.actions.FindAction("move");
 
         GizmosController.Instance.RegisterGizmo(() =>
         {
-            var r = CalculateBackWheelTurningRadius(-ActualLockAngle);
+            var r = CalculateBackWheelTurningRadius(-currentLockAngle);
 
-            return new LineGizmoInfo(Color.cyan, RearLeftWheel.transform.position, RearLeftWheel.transform.position - RearLeftWheel.transform.right * r, ActualLockAngle < 0);
+            return new LineGizmoInfo(Color.cyan, RearLeftWheel.transform.position, RearLeftWheel.transform.position - RearLeftWheel.transform.right * r, currentLockAngle < 0);
         });
 
         GizmosController.Instance.RegisterGizmo(() =>
         {
-            var r = CalculateFrontWheelTurningRadius(-ActualLockAngle);
+            var r = CalculateFrontWheelTurningRadius(-currentLockAngle);
 
-            return new LineGizmoInfo(Color.cyan, FrontLeftWheel.transform.position, FrontLeftWheel.transform.position - FrontLeftWheel.transform.right * r, ActualLockAngle < 0);
+            return new LineGizmoInfo(Color.cyan, FrontLeftWheel.transform.position, FrontLeftWheel.transform.position - FrontLeftWheel.transform.right * r, currentLockAngle < 0);
         });
 
         GizmosController.Instance.RegisterGizmo(() =>
        {
-           var r = CalculateBackWheelTurningRadius(ActualLockAngle);
+           var r = CalculateBackWheelTurningRadius(currentLockAngle);
 
-           return new LineGizmoInfo(Color.cyan, RearRightWheel.transform.position, RearRightWheel.transform.position + RearRightWheel.transform.right * r, ActualLockAngle > 0);
+           return new LineGizmoInfo(Color.cyan, RearRightWheel.transform.position, RearRightWheel.transform.position + RearRightWheel.transform.right * r, currentLockAngle > 0);
        });
 
         GizmosController.Instance.RegisterGizmo(() =>
         {
-            var r = CalculateFrontWheelTurningRadius(ActualLockAngle);
+            var r = CalculateFrontWheelTurningRadius(currentLockAngle);
 
-            return new LineGizmoInfo(Color.cyan, FrontRightWheel.transform.position, FrontRightWheel.transform.position + FrontRightWheel.transform.right * r, ActualLockAngle > 0);
+            return new LineGizmoInfo(Color.cyan, FrontRightWheel.transform.position, FrontRightWheel.transform.position + FrontRightWheel.transform.right * r, currentLockAngle > 0);
         });
     }
 
     void Update()
     {
-        var currentAcceleration = EngineAcceleration * accelerateAction.ReadValue<float>() - (BrakeDeceleration * brakeAction.ReadValue<float>()) - FrictionDeceleration - AirResistanceDeceleration;
+        if (isControlDisabled)
+        {
+            return;
+        }
 
-        currentSpeed = Mathf.Max(0, currentSpeed + currentAcceleration);
+        var currentAcceleration = EngineAcceleration * accelerateAction.ReadValue<float>() - (BrakeDeceleration * brakeAction.ReadValue<float>());
+
+        currentSpeed = Mathf.Clamp(currentSpeed + currentAcceleration, 0, MaxSpeed);
 
         var moveInputValue = moveAction.ReadValue<Vector2>().x;
 
         if (moveInputValue != 0)
         {
-            currentLockAngle = Mathf.Clamp(currentLockAngle + moveAction.ReadValue<Vector2>().x * Time.deltaTime * TurningSpeed, -FullLockAngle, FullLockAngle);
+            currentLockAngle = Mathf.Clamp(currentLockAngle + moveInputValue * Time.deltaTime * TurningSpeed, -FullLockAngle, FullLockAngle);
         }
         else if (currentLockAngle > 0)
         {
@@ -104,9 +93,9 @@ public class PlayerController : MonoBehaviour
             currentLockAngle = Mathf.Clamp(currentLockAngle + Time.deltaTime * TurningSpeed, -FullLockAngle, 0);
         }
 
-        if (ActualLockAngle > 0)
+        if (currentLockAngle > 0)
         {
-            var turningRadius = CalculateBackWheelTurningRadius(ActualLockAngle);
+            var turningRadius = CalculateBackWheelTurningRadius(currentLockAngle);
             var turnCentre = RearRightWheel.transform.position + RearRightWheel.transform.right * turningRadius;
 
             var turningCircumference = turningRadius * 2 * Mathf.PI;
@@ -116,9 +105,9 @@ public class PlayerController : MonoBehaviour
 
             transform.RotateAround(turnCentre, transform.up, rotationAngle);
         }
-        else if (ActualLockAngle < 0)
+        else if (currentLockAngle < 0)
         {
-            var turningRadius = CalculateBackWheelTurningRadius(-ActualLockAngle);
+            var turningRadius = CalculateBackWheelTurningRadius(-currentLockAngle);
             var turnCentre = RearLeftWheel.transform.position - RearLeftWheel.transform.right * turningRadius;
 
             var turningCircumference = turningRadius * 2 * Mathf.PI;
@@ -133,8 +122,8 @@ public class PlayerController : MonoBehaviour
             transform.position += currentSpeed * Time.deltaTime * transform.forward;
         }
 
-        FrontLeftWheel.transform.localRotation = Quaternion.AngleAxis(ActualLockAngle, FrontLeftWheel.transform.up);
-        FrontRightWheel.transform.localRotation = Quaternion.AngleAxis(ActualLockAngle, FrontRightWheel.transform.up);
+        FrontLeftWheel.transform.localRotation = Quaternion.AngleAxis(currentLockAngle, FrontLeftWheel.transform.up);
+        FrontRightWheel.transform.localRotation = Quaternion.AngleAxis(currentLockAngle, FrontRightWheel.transform.up);
     }
 
     float CalculateFrontWheelTurningRadius(float angle) => Wheelbase / Mathf.Sin(Mathf.Deg2Rad * angle);

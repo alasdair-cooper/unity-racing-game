@@ -2730,11 +2730,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4599512191960455614, guid: d4a76eb9254544d4ca07601653d4db34, type: 3}
       propertyPath: TurningSpeed
-      value: 60
+      value: 45
       objectReference: {fileID: 0}
     - target: {fileID: 4599512191960455614, guid: d4a76eb9254544d4ca07601653d4db34, type: 3}
       propertyPath: FullLockAngle
-      value: 20
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 4599512191960455614, guid: d4a76eb9254544d4ca07601653d4db34, type: 3}
       propertyPath: TurningSpeedCurve.m_Curve.Array.size
