@@ -9,7 +9,7 @@ public class LapRecorder : MonoBehaviour
     private readonly Stack<LapInfo> _laps = new();
     private double _timeSinceLastLap;
 
-    public void Start() => EventController.Instance.LapCompleted += (_, _) => OnLapCompleted();
+    public void Start() => EventController.Instance.LapEvents.LapCompleted += (_, _) => OnLapCompleted();
 
     public void Update() => _timeSinceLastLap += Time.deltaTime;
 
@@ -22,7 +22,7 @@ public class LapRecorder : MonoBehaviour
 
         if (previousLap != null)
         {
-            EventController.Instance.OnLapRecorded(previousLap.Time - newLap.Time);
+            EventController.Instance.LapEvents.OnLapRecorded(previousLap.Time - newLap.Time);
         }
     }
 }

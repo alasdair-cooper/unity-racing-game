@@ -23,7 +23,7 @@ public class GameController : MonoBehaviour
     {
         foreach (var checkpoint in Checkpoints)
         {
-            EventController.Instance.CheckpointPassed += (_, args) => OnCheckpointPassed(args.Name);
+            EventController.Instance.CheckpointEvents.CheckpointPassed += (_, args) => OnCheckpointPassed(args.Name);
         }
 
         StartCoroutine(BeginRaceAfterDelay());
@@ -34,10 +34,10 @@ public class GameController : MonoBehaviour
         var waitForOneSecond = new WaitForSeconds(1);
         for (int i = BeginRaceAfterSeconds; i > 0; i--)
         {
-            EventController.Instance.OnRaceCountdownTick(i);
+            EventController.Instance.RaceEvents.OnRaceCountdownTick(i);
             yield return waitForOneSecond;
         }
-        EventController.Instance.OnRaceStarted(MaxLaps);
+        EventController.Instance.RaceEvents.OnRaceStarted(MaxLaps);
     }
 
     public void OnCheckpointPassed(string name)
@@ -45,12 +45,12 @@ public class GameController : MonoBehaviour
         if (_triggeredCheckpointNames.Count == Checkpoints.Length && name == LapStartEndCheckpoint.name)
         {
             _lapCount++;
-            EventController.Instance.OnLapCompleted(_lapCount, MaxLaps);
+            EventController.Instance.LapEvents.OnLapCompleted(_lapCount, MaxLaps);
             _triggeredCheckpointNames.Clear();
 
             if (_lapCount == MaxLaps)
             {
-                EventController.Instance.OnRaceCompleted();
+                EventController.Instance.RaceEvents.OnRaceCompleted();
             }
         }
 

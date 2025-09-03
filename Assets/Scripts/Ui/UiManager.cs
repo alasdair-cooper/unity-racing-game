@@ -16,7 +16,7 @@ public class UiManager : MonoBehaviour
     {
         Instance = this;
         SetScreen(GameScreen.Hud);
-        EventController.Instance.RaceCompleted += (_, _) => SetScreen(GameScreen.RaceCompleted);
+        EventController.Instance.RaceEvents.RaceCompleted += (_, _) => SetScreen(GameScreen.RaceCompleted);
     }
 
     public void SetScreen(GameScreen screen)

@@ -35,8 +35,8 @@ public class HudManager : MonoBehaviour
 
     public void Start()
     {
-        EventController.Instance.RaceCountdownTick += (_, args) => RaceStartCountdownText.text = string.Format(RaceStartCountdownTextFormat, args.Tick);
-        EventController.Instance.RaceStarted += (_, args) =>
+        EventController.Instance.RaceEvents.RaceCountdownTick += (_, args) => RaceStartCountdownText.text = string.Format(RaceStartCountdownTextFormat, args.Tick);
+        EventController.Instance.RaceEvents.RaceStarted += (_, args) =>
         {
             timeSinceRaceStart = TimeSpan.Zero;
             RaceStartCountdownText.gameObject.SetActive(false);
@@ -45,7 +45,7 @@ public class HudManager : MonoBehaviour
             SpeedometerText.gameObject.SetActive(true);
             TimerText.gameObject.SetActive(true);
         };
-        EventController.Instance.SplitRecorded += (_, args) =>
+        EventController.Instance.CheckpointEvents.SplitRecorded += (_, args) =>
         {
             switch (args.Delta.Ticks)
             {
@@ -64,8 +64,8 @@ public class HudManager : MonoBehaviour
 
             }
         };
-        EventController.Instance.LapCompleted += (_, args) => LapText.text = string.Format(LapTextFormat, args.CompletedLapCount + 1, args.MaxLapCount);
-        EventController.Instance.LapRecorded += (_, args) =>
+        EventController.Instance.LapEvents.LapCompleted += (_, args) => LapText.text = string.Format(LapTextFormat, args.CompletedLapCount + 1, args.MaxLapCount);
+        EventController.Instance.LapEvents.LapRecorded += (_, args) =>
         {
             switch (args.Delta.Ticks)
             {
@@ -84,7 +84,7 @@ public class HudManager : MonoBehaviour
 
             }
         };
-        EventController.Instance.RaceCompleted += (_, _) => LapText.text = "Race completed!";
+        EventController.Instance.RaceEvents.RaceCompleted += (_, _) => LapText.text = "Race completed!";
     }
 
     public void Update()

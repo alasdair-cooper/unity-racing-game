@@ -10,7 +10,7 @@ public class SplitRecorder : MonoBehaviour
     private string _lastCheckpointName;
     private double _timeSinceLastCheckpoint;
 
-    public void Start() => EventController.Instance.CheckpointPassed += (_, args) => OnCheckpointPassed(args.Name);
+    public void Start() => EventController.Instance.CheckpointEvents.CheckpointPassed += (_, args) => OnCheckpointPassed(args.Name);
 
     public void Update() => _timeSinceLastCheckpoint += Time.deltaTime;
 
@@ -25,7 +25,7 @@ public class SplitRecorder : MonoBehaviour
 
             if (previousSplit != null)
             {
-                EventController.Instance.OnSplitRecorded(previousSplit.Time - newSplit.Time);
+                EventController.Instance.CheckpointEvents.OnSplitRecorded(previousSplit.Time - newSplit.Time);
             }
         }
 

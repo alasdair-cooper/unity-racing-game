@@ -33,7 +33,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        EventController.Instance.RaceStarted += (_, _) => isControlDisabled = false;
+        EventController.Instance.RaceEvents.RaceStarted += (_, _) => isControlDisabled = false;
 
         accelerateAction = InputSystem.actions.FindAction("accelerate");
         brakeAction = InputSystem.actions.FindAction("brake");
