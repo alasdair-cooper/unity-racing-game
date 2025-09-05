@@ -19,7 +19,10 @@ public class GizmosController : MonoBehaviour
         {
             foreach (var gizmo in _gizmoGenerators.Select(x => x()).Where(x => x.ShouldDraw))
             {
+                var prevColor = Gizmos.color;
+                Gizmos.color = gizmo.Color;
                 gizmo.Draw();
+                Gizmos.color = prevColor;
             }
         }
     }
@@ -52,13 +55,7 @@ public class LineGizmoInfo : GizmoInfo
 
     public Vector3 End { get; }
 
-    public override void Draw()
-    {
-        var prevColor = Gizmos.color;
-        Gizmos.color = Color;
-        Gizmos.DrawLine(Start, End);
-        Gizmos.color = prevColor;
-    }
+    public override void Draw() => Gizmos.DrawLine(Start, End);
 }
 
 public class CircleGizmoInfo : GizmoInfo
@@ -73,11 +70,5 @@ public class CircleGizmoInfo : GizmoInfo
 
     public float Radius { get; }
 
-    public override void Draw()
-    {
-        var prevColor = Gizmos.color;
-        Gizmos.color = Color;
-        Gizmos.DrawSphere(Origin, Radius);
-        Gizmos.color = prevColor;
-    }
+    public override void Draw() => Gizmos.DrawSphere(Origin, Radius);
 }
