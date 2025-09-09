@@ -2,12 +2,15 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(Camera))]
 public class CameraController : MonoBehaviour
 {
     [Header("Settings")]
     public float FollowDistance;
     public float FollowPitch;
+    [Tooltip("Speed at which the camera returns to the default offset.")]
     public float ReOrientateSpeed;
+    [Tooltip("Number of seconds for camera controls to be idle before it returns to the default offset.")]
     public float SecondsUntilReOrientation;
     public int MinPitch;
     public int MaxPitch;
