@@ -6,13 +6,20 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Stats")]
     public float EngineAcceleration;
+    [Tooltip("The curve to use when calculating acceleration while the throttle is continually pressed.")]
     public AnimationCurve EngineAccelerationCurve;
+    [Tooltip("The number of seconds until the acceleration reaches the max value defined above.")]
     public int SecondsToMaxAcceleration;
+    [Tooltip("Deceleration due to friction.")]
     public float FrictionDeceleration;
+    [Tooltip("Deceleration while applying the brake.")]
     public float BrakeDeceleration;
     public float MaxSpeed;
     public float TurningSpeed;
+    [Tooltip("Maximum wheel angle (in either direction).")]
     public float FullLockAngle;
+    [Tooltip("Reduce the turning speed as the speed approaches the max speed. A value of 0.5 would result in a 50% decrease in turning speed at max speed.")]
+    public float SpeedTurningSpeedReduction;
 
     [Header("Wheels")]
     public Component FrontLeftWheel;
@@ -90,9 +97,13 @@ public class PlayerController : MonoBehaviour
 
         var moveInputValue = moveAction.ReadValue<Vector2>().x;
 
+        var turningSpeedModifier = 1 - (currentSpeed / MaxSpeed * SpeedTurningSpeedReduction);
+
+        Debug.Log(turningSpeedModifier);
+
         if (moveInputValue != 0)
         {
-            currentLockAngle = Mathf.Clamp(currentLockAngle + moveInputValue * Time.deltaTime * TurningSpeed, -FullLockAngle, FullLockAngle);
+            currentLockAngle = Mathf.Clamp(currentLockAngle + moveInputValue * Time.deltaTime * TurningSpeed * turningSpeedModifier, -FullLockAngle, FullLockAngle);
         }
         else if (currentLockAngle > 0)
         {
